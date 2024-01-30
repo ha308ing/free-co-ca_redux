@@ -1,0 +1,8 @@
+{
+  "name": "redux-tutorial",
+  "private": true,
+  "workspaces": [
+    "projects/*"
+  ],
+  "packageManager": "yarn@4.0.2"
+}
