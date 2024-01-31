@@ -1,0 +1,11 @@
+.notification {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+  min-height: 4em;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
