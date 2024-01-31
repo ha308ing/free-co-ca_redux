@@ -5,6 +5,7 @@ import Layout from "./components/Layout";
 import { useDispatch, useSelector } from "react-redux";
 import { Notification } from "./components/Notification";
 import { uiActions } from "./store/uiSlice";
+import { sendCartData } from "./store/cartSlice";
 
 let isFirstRender = true;
 function App() {
@@ -18,59 +19,9 @@ function App() {
       isFirstRender = false;
       return;
     }
-    const sendRequest = async () => {
-      dispatch(
-        uiActions.setNotification({
-          type: "warning",
-          message: "Sending request to the database",
-          open: true,
-        })
-      );
-      const request = await fetch(
-        "https://redux-http-7280d-default-rtdb.europe-west1.firebasedatabase.app/cart.json",
-        {
-          method: "PUT",
-          body: JSON.stringify(cart),
-          headers: {
-            "Content-Type": "text/json",
-          },
-        }
-      );
-      if (request.ok) {
-        dispatch(
-          uiActions.setNotification({
-            type: "success",
-            message: "Sent request to the dabase successfully",
-            open: true,
-          })
-        );
-        /*         setTimeout(() => {
-          dispatch(uiActions.setNotification({ open: false }));
-        }, 2000); */
-      } else {
-        dispatch(
-          uiActions.setNotification(
-            uiActions.setNotification({
-              type: "error",
-              message: "Failed to send request to the database",
-              open: true,
-            })
-          )
-        );
-      }
-      const response = await request.json();
-    };
 
-    sendRequest().catch(err => {
-      uiActions.setNotification(
-        uiActions.setNotification({
-          type: "error",
-          message: err.message,
-          open: true,
-        })
-      );
-    });
-  }, [cart]);
+    dispatch(sendCartData(cart));
+  }, [cart, dispatch]);
 
   const content = isLoggedIn ? <Layout /> : <Auth />;
 
