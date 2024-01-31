@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { uiActions } from "./uiSlice";
 
 export const cartSlice = createSlice({
   name: "cart",
@@ -8,9 +7,11 @@ export const cartSlice = createSlice({
     total: 0,
     count: 0,
     showCart: false,
+    changed: false,
   },
   reducers: {
     addToCart(state, action) {
+      state.changed = true;
       const { id, price, name } = action.payload;
       console.log(action.payload);
       state.count += 1;
@@ -19,6 +20,7 @@ export const cartSlice = createSlice({
       state.items[id].count += 1;
     },
     incrementCart(state, action) {
+      state.changed = true;
       console.log(state);
       const { id, price, name } = action.payload;
       console.log(action.payload);
@@ -33,6 +35,7 @@ export const cartSlice = createSlice({
       state.items[id].price = price;
     },
     decrementCart(state, action) {
+      state.changed = true;
       const { id, price } = action.payload;
       state.count -= 1;
       state.total -= price;
@@ -49,6 +52,7 @@ export const cartSlice = createSlice({
       }
     },
     removeFromCart(state, action) {
+      state.changed = true;
       const id = action.payload;
       const targetProduct = state.items[id];
       if (!!targetProduct) {
@@ -64,65 +68,19 @@ export const cartSlice = createSlice({
     showCart(state) {
       state.showCart = !state.showCart;
     },
+    setCart(state, action) {
+      const {
+        items = {},
+        total = 0,
+        count = 0,
+        showCart = false,
+      } = action.payload;
+      state.items = items;
+      state.total = total;
+      state.count = count;
+      state.showCart = showCart;
+    },
   },
 });
-
-export const sendCartData = cart => async dispatch => {
-  dispatch(
-    uiActions.setNotification({
-      type: "warning",
-      message: "Sending request to the database",
-      open: true,
-    })
-  );
-
-  const sendRequest = async () => {
-    const request = await fetch(
-      "https://redux-http-7280d-default-rtdb.europe-west1.firebasedatabase.app/cart.json",
-      {
-        method: "PUT",
-        body: JSON.stringify(cart),
-        headers: {
-          "Content-Type": "text/json",
-        },
-      }
-    );
-    if (request.ok) {
-      dispatch(
-        uiActions.setNotification({
-          type: "success",
-          message: "Sent request to the dabase successfully",
-          open: true,
-        })
-      );
-      /*         setTimeout(() => {
-      dispatch(uiActions.setNotification({ open: false }));
-    }, 2000); */
-    } else {
-      dispatch(
-        uiActions.setNotification(
-          uiActions.setNotification({
-            type: "error",
-            message: "Failed to send request to the database",
-            open: true,
-          })
-        )
-      );
-    }
-    const response = await request.json();
-  };
-
-  try {
-    await sendRequest();
-  } catch (error) {
-    uiActions.setNotification(
-      uiActions.setNotification({
-        type: "error",
-        message: error.message,
-        open: true,
-      })
-    );
-  }
-};
 
 export const cartActions = cartSlice.actions;

@@ -5,7 +5,7 @@ import Layout from "./components/Layout";
 import { useDispatch, useSelector } from "react-redux";
 import { Notification } from "./components/Notification";
 import { uiActions } from "./store/uiSlice";
-import { sendCartData } from "./store/cartSlice";
+import { getCartData, sendCartData } from "./store/cartActions";
 
 let isFirstRender = true;
 function App() {
@@ -15,12 +15,16 @@ function App() {
   const notificationStatus = useSelector(state => state.ui.notification);
 
   useEffect(() => {
+    dispatch(getCartData());
+  }, [dispatch]);
+
+  useEffect(() => {
     if (isFirstRender) {
       isFirstRender = false;
       return;
     }
-
-    dispatch(sendCartData(cart));
+    console.log(cart.changed);
+    if (cart.changed) dispatch(sendCartData(cart));
   }, [cart, dispatch]);
 
   const content = isLoggedIn ? <Layout /> : <Auth />;
